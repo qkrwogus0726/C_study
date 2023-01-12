@@ -1,18 +1,17 @@
 #include <stdio.h>
 #include <string.h>
 
-#define max 20
+#define BUFFER_SIZE 20
 
 typedef struct List
 {
-	char* name;
-	char* num;
-	char* email;
-	char* group;
-	char* tes;
+	char name[BUFFER_SIZE];
+	char num[BUFFER_SIZE];
+	char email[BUFFER_SIZE];
+	char group[BUFFER_SIZE];
 }LST;
 
-LST L[max];
+LST L[BUFFER_SIZE];
 
 void add(char* name, char* number, char* email, char* group)
 {
@@ -25,14 +24,14 @@ void add(char* name, char* number, char* email, char* group)
 
 int main(void)
 {
-	char command[max];
-	char findname[max];
+	char command[BUFFER_SIZE];
+	char findname[BUFFER_SIZE];
 	int count = 0;
 
 	while (1)
 	{
 		printf("$ : ");
-		scanf_s("%s", command, sizeof(command));
+		scanf_s("%s", command, BUFFER_SIZE);
 		printf("\n");
 
 		if (strcmp(command, "add") == 0)
@@ -59,12 +58,12 @@ int main(void)
 		else if (strcmp(command, "find") == 0)
 		{
 			printf("name : ");
-			scanf_s("%s", findname, sizeof(findname));
+			scanf_s("%s", findname, BUFFER_SIZE);
 			for (int i = 0; i < count; i++) {
 				if (strcmp(findname, L[i].name) == 0)
 				{
 					printf("name : ");
-					printf("%s", L[i].name);
+					printf("%s \n", L[i].name);
 					printf("num : ");
 					printf("%s", L[i].num);
 					printf("\n\n");
@@ -74,7 +73,7 @@ int main(void)
 		else if (strcmp(command, "remove") == 0)
 		{
 			printf("name : ");
-			scanf_s("%s", findname, sizeof(findname));
+			scanf_s("%s", findname, BUFFER_SIZE);
 			for (int i = 0; i < count; i++)
 			{
 				if (strcmp(findname, L[i].name) == 0)
@@ -100,14 +99,15 @@ int main(void)
 				return;
 			}
 			for (int i = 0; i < count; i++) {
-				fprintf(fp, "%s %s", L[i].name, L[i].num);
+				fprintf(fp, "%s", L[i].name);
+				fprintf(fp, "%s", L[i].num);
 			}
 			fclose(fp);
 		}
 		else if (strcmp(command, "read") == 0)
 		{
-			char buf1[max];
-			char buf2[max];
+			char buf1[BUFFER_SIZE];
+			char buf2[BUFFER_SIZE];
 			int n = 0;
 
 			FILE* fp;
