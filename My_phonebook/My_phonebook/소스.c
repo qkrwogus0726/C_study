@@ -100,7 +100,9 @@ int main(void)
 			}
 			for (int i = 0; i < count; i++) {
 				fprintf(fp, "%s", L[i].name);
+				fprintf(fp, "\n");
 				fprintf(fp, "%s", L[i].num);
+				fprintf(fp, "\n");
 			}
 			fclose(fp);
 		}
@@ -120,6 +122,7 @@ int main(void)
 			{
 				fscanf_s(fp, "%s", buf2, sizeof(buf2));
 				strcpy_s(L[n].name, sizeof(L[n].name), _strdup(buf1));
+
 				strcpy_s(L[n].num, sizeof(L[n].num), _strdup(buf2));
 				n++;
 			}
