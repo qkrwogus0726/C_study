@@ -9,7 +9,7 @@ typedef struct List
 	char* num;
 	char* email;
 	char* group;
-	char* test;
+	char* tes;
 }LST;
 
 LST L[max];
