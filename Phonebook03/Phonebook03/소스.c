@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #define CAPACITY 100
+#define INIT_CAPACITY 100
 #define BUFFER_SIZE 100
 
 typedef struct person
@@ -13,11 +14,18 @@ typedef struct person
 	char* group;
 }Person;
 
-Person directory[CAPACITY];
-
-int n = 0;
+Person **directory;
+int capacity;
+int n;
 
 char delim[] = " ";
+
+void init()
+{
+	directory = (Person**)malloc(INIT_CAPACITY * sizeof(Person*)); //각 배열 요소는 Person*임. 그게 INIT_CAPACITY만큼 있음.
+	capacity = INIT_CAPACITY;
+	n = 0;
+}
 
 int read_line(FILE* fp, char str[], int n) //파일명, 읽은거 저장할 값, 배열의 크기
 {
@@ -33,16 +41,22 @@ int read_line(FILE* fp, char str[], int n) //파일명, 읽은거 저장할 값, 배열의 크
 
 void add(char* name, char* number, char* email, char* group)
 {
+	if (n >= capacity) //저장된 사람 수가 배열의 크기보다 크거나 같음. 꽉찼다는 의미
+		reallocate();
+
 	int i = n - 1;
-	while (i >= 0 && strcmp(directory[i].name, name) > 0)
+	while (i >= 0 && strcmp(directory[i]->name, name) > 0)
 	{
 		directory[i + 1] = directory[i];
 		i--;
 	}
-	directory[i + 1].name = _strdup(name); //입력 안 한 항목은 하나의 공백문자로 저장됨
-	directory[i + 1].number = _strdup(number);
-	directory[i + 1].email = _strdup(email);
-	directory[i + 1].group = _strdup(group);
+
+	directory[i + 1] = (Person*)malloc(sizeof(Person)); //새로운 사람을 넣을 공간 확보
+
+	directory[i + 1]->name = name; //입력 안 한 항목은 하나의 공백문자로 저장됨
+	directory[i + 1]->number = number;
+	directory[i + 1]->email = email;
+	directory[i + 1]->group = group;
 	n++;
 }
 
@@ -100,6 +114,15 @@ void remove(char* name)
 	printf("'%s' was deleted successfully.\n", name);
 }
 
+void release_person(Person* p)
+{
+	free(p->name);
+	if (p->number != NULL) free(p->number);
+	if (p->email != NULL) free(p->email);
+	if (p->group != NULL) free(p->group);
+	free(p);
+}
+
 int search(char* name)
 {
 	int i;
@@ -113,37 +136,31 @@ int search(char* name)
 	return -1;
 }
 
-void print_person(Person p)
+void print_person(Person *p)
 {
-	printf("%s: \n", p.name);
-	printf("   Phone: %s\n", p.number);
-	printf("   Email: %s\n", p.email);
-	printf("   Group: %s\n", p.group);
+	printf("%s: \n", p->name);
+	printf("   Phone: %s\n", p->number);
+	printf("   Email: %s\n", p->email);
+	printf("   Group: %s\n", p->group);
 }
 
-//void reallocate()
-//{
-//	int i;
-//	capacity *= 2; //반드시 2배 할 필요는 없음.
-//	char** tmp1 = (char**)malloc(capacity * sizeof(char*));
-//	char** tmp2 = (char**)malloc(capacity * sizeof(char*));
-//
-//	for (i = 0; i < n; i++)
-//	{
-//		tmp1[i] = names[i];
-//		tmp2[i] = numbers[i];
-//	}
-//	free(names);
-//	free(numbers);
-//
-//	names = tmp1;
-//	numbers = tmp2;
-//}
+void reallocate()
+{
+	int i;
+	capacity *= 2; //반드시 2배 할 필요는 없음.
+	Person** tmp = (Person**)malloc(capacity * sizeof(Person*)); //구조체의 배열을 사용했을 때 reallocate를 하면 값이 왔다갔다 하는게 아니라
+	                                                             //값의 주소들만 왔다갔다 하기 때문에 더 효율적임.
+	for (i = 0; i < n; i++)
+		tmp[i] = directory[i];
+	free(directory);
+	directory = tmp;
+}
 
 void load(char* fileName)
 {
 	char buffer[BUFFER_SIZE];
 	char* name, * number, * email, * group;
+	char* token;
 
 	FILE* fp = fopen(fileName, "r");
 	if (fp == NULL)
@@ -156,10 +173,24 @@ void load(char* fileName)
 		if (read_line(fp, buffer, BUFFER_SIZE) <= 0)
 			break;
 		name = strtok(buffer, "#");
-		number = strtok(NULL, "#");
-		email = strtok(NULL, "#");
-		group = strtok(NULL, "#");
-		add(name, number, email, group);
+		token = strtok(NULL, "#");
+
+		if (strcmp(token, " ") == 0)
+			number = NULL;
+		else
+			number = strdup(token);
+		token = strtok(NULL, "#");
+
+		if (strcmp(token, " ") == 0)
+			email = NULL;
+		else
+			email = strdup(token);
+
+		if (strcmp(token, " ") == 0)
+			group = NULL;
+		else
+			group = strdup(token);
+		add(strdup(name), number, email, group);
 	}
 	fclose(fp);
 }
@@ -242,6 +273,8 @@ int main(void)
 	char command_line[BUFFER_SIZE];
 	char* command, * argument;
 	char name_str[BUFFER_SIZE];
+
+	INIT_CAPACITY
 
 	while (1)
 	{
