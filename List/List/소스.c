@@ -1,183 +1,84 @@
 #include <stdio.h>
 #include <malloc.h>
 
-struct node
-{
-	char* data;												//데이터 필드
-	struct node* next;										//링크 필드 = 자기참조형 구조체
-};
+#define MAX_POLYS 100
 
-typedef struct node Node;
-Node* head = NULL;											//연결리스트의 첫번째 노드의 주소를 저장할 포인터를 보통 head, first 등으로 씀.
-
-void add_first(Node** ptr_head, char* item)					//add_first(&head, item_to_store) head의 주소를 받아야 외부에서 head 값을 바꿀 수 있다.
+typedef struct term
 {
-	Node* temp = (Node*)malloc(sizeof(Node));				//104
-	temp->data = item;
-	temp->next = *ptr_head;									//지금 head의 주소를 가리킴(next -> 100)
-	*ptr_head = temp;										//head의 주소를 104로 바꿈
+	int coef;												//계수
+	int expo;												//지수
+	struct term* next;
+}Term;
+
+typedef struct polynomial
+{
+	char name;												//다항식의 이름 f, g, h 등
+	Term* first;											//다항식을 구성하는 첫번째 항의 주소
+	int size;												//항의 개수
+} Polynomial;
+
+Polynomial* polys[MAX_POLYS];
+int n = 0;													//저장된 다항식의 개수
+
+Term* create_term_instance()								//초기화 해주는 함수
+{
+	Term* t = (Term*)malloc(sizeof(Term));					//Term 객체 생성 후 초기화. 초기화 꼭 해줘야하는데 매번 하기 귀찮으니 함수 생성
+	t->coef = 0;
+	t->expo = 0;
+	return t;												//주소 리턴
 }
 
-void add_after(Node* prev, char* item)
+Polynomial* create_polynomial_instance(char name)			//생성 객체 초기화해주는 함수. name은 다항식의 이름
 {
-	if (prev == NULL)
-		return 0;
-
-	Node* tmp = (Node*)malloc(sizeof(Node));
-	tmp->data = item;
-	tmp->next = prev->next;
-	prev->next = tmp;
+	Polynomial* ptr_poly = (Polynomial*)malloc(sizeof(Polynomial));
+	ptr_poly->name = name;
+	ptr_poly->size = 0;
+	ptr_poly->first = NULL;
+	return ptr_poly;
 }
 
-Node* remove_after(Node* prev)								//인자로 받은 prev의 다음 노드를 삭제하는 함수
+void add_term(int c, int e, Polynomial* poly)				//cx^e
 {
-	Node* tmp = prev->next;									//tmp에 이전노드의 다음 주소를 저장
-	if (tmp == NULL)
-	{
-		return NULL;
-	}
-	else
-	{
-		prev->next = tmp->next;								 //prev의 next에 한 칸 건너뛰고 다다음칸의 주소 지정
-		return tmp;
-	}
-}
+	if(c == 0) return;
 
-Node* remove_first()
-{
-	if (head == NULL)
-		return NULL;
-	else
+	Term* p = poly->first, * q = NULL;						//p, q 생산하는데, p는 첫부분에서 시작. q는 그 앞
+	while (p != NULL && p->expo > e)						//p의 지수가 내가 지정한 지수보다 크면 뒤로(작은 지수 방향으로) 이동
 	{
-		Node* tmp = head;
-		head = head->next;
-		return tmp;
-	}
-}
-
-Node* findd(char *word)										//검색할 단어를 받음
-{
-	Node* p = head;
-	while (p != NULL)
-	{
-		if (strcmp(p->data, word) == 0)
-			return p;
+		q = p;
 		p = p->next;
 	}
-	return NULL;
-}
+	if (p != NULL && p->expo == e)							//내가 지정한 지수에 도착하면
+		p->coef += c;										//계수에 c 더하기
 
-Node* get_node(int index)									//연결리스트에서 index번째 노드를 찾아서 리턴해주는 함수
-{
-	Node* p = (Node*)malloc(sizeof(Node));
-	if (index < 0) return NULL;
-	for (int i = 0; i < index && p != NULL; i++)
+	if (p->coef == 0)										//계수 더했는데 0이면
 	{
-		p = p->next;
+		if (q == NULL)										//q == NULL → p가 첫번째 항일 경우
+			poly->first = p->next;							//첫번째 노드 삭제(= 첫번째의 자리에 p 다음꺼 주소값 입력 → p가 첫번째가 됨)
+		else
+			q->next = p->next;								//p 건너뛰기
+		poly->size--;
+		free(p);											//p는 쓸모 없어졌으니 메모리 할당 해제 
 	}
-	return p;
-}
-
-int add(int index, char* item)								//index번째에 새로운 노드 만들어서 삽입
-{
-	Node* prev = (Node*)malloc(sizeof(Node));
-	Node* p = (Node*)malloc(sizeof(Node));
-
-	if (index < 0) return NULL;
-
-	for (int i = 0; i < index-1 && prev != NULL; i++)
-	{
-		prev = prev->next;
-	} 
 	
-	p->data = "anything";
-	p->next = prev->next;
-	prev->next = p;
-}
+	Term* term = create_term_instance();
+	term->coef = c;
+	term->expo = e;
 
-int remove(int index)
-{
-	Node* prev = (Node*)malloc(sizeof(Node));
-	Node* p = (Node*)malloc(sizeof(Node));
-
-	if (index < 0) return NULL;
-
-	for (int i = 0; i < index - 1 && prev != NULL; i++)
-	{
-		prev = prev->next;
-	}														//prev 구하면 → prev의 next값을 받은 이후 prev의 next를 그 다음으로 옮기기
-	p = prev->next;
-	prev->next = p->next;
-}
-
-Node* remove_item(char* item)
-{
-	Node* p = head;
-	Node* q = NULL;
-	while (p != NULL && strcmp(p->data, item) == 0)
-	{
-		q = p;
-		p = p->next;
-	}
-	if (p == NULL)
-		return NULL;
-	if (q == NULL)											//삭제해야 할 노드가 첫번째 노드인 경우
-		return remove_first();
-	else return
-		remove_after(q);
-}
-
-void add_to_ordered_list(char* item)
-{
-	Node* p = head;
-	Node* q = NULL;
-
-	while (p != NULL && strcmp(p->data, item)==0) //order 대로 안 돼있는데 강의에서는 그냥 된거라 가정하고 넘어감
-	{
-		q = p;
-		p = p->data;
-	}
 	if (q == NULL)
-		add_first(p, item);
+	{
+		term->next = poly->first;
+		poly->first = term;
+	}
 	else
-		add_after(p, q);
+	{
+		term->next = p;
+		q->next = term;
+	}
+	poly->size++;
 }
 
 int main(void)
 {
-	char word = "Hello";
-	char *ptr;
-	ptr = word;
-
-	Node* head = (Node*)malloc(sizeof(Node));				//head에 100 저장되어있음
-	head->data = "tom";
-	head->next = NULL;
-
-	Node* p = (Node*)malloc(sizeof(Node));					//101
-	p->data = "dick";
-	head->next = p;
 	
-	Node*q = (Node*)malloc(sizeof(Node));					//102
-	q->data = "harry";
-	p->next = q;
-
-	Node*tmp = (Node*)malloc(sizeof(Node));					//103
-	tmp->data = "Ann";
-	tmp->next = head;										//tmp next가 100번을 가리킴
-	head = tmp;												//head가 103번을 가리키도록 바꿈
-
-	add_after(tmp, "Hello");
-															//head에 저장된 값을 p에 써라 → p도 첫번째 노드를 가리킴
-
-	findd(&word, head);
-
-
-
-
-	while (head != NULL)
-	{
-		printf("%s\n", head->data);
-		head = head->next;
-	}
-	return 0;
+	
 }
