@@ -113,7 +113,7 @@ void read()
 	fclose(fp);
 }
 
-int main(void)
+int main(void) //asdasd
 {
 	char command[BUFFER_SIZE];
 
