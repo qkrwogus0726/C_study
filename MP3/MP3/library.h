@@ -3,6 +3,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 typedef struct song Song;
 typedef struct snode Snode;
@@ -19,7 +20,7 @@ struct song
 struct snode
 {
 	struct snode* next, * prev;
-	Song* song
+	Song* song;
 };
 
 struct artist
@@ -33,5 +34,9 @@ struct artist
 
 void initialize();
 void add_song(char* artist, char* title, char* path);
+void status();
+void print_artist(Artist* p);
+void print_song(Song* ptr_song);
+void load(FILE* fp);
 
 #endif

@@ -42,19 +42,23 @@ void process_command()
 	while (1)
 	{
 		printf("$ ");
-		if (read_line(stdin, command_line, BUFFER_LENGTH) < 0)		//line 단위로 사용자의 입력을 받는데 0이하면 그냥 엔터만 친 것
+		if (read_line(stdin, command_line, BUFFER_LENGTH) < 0)		//line 단위로 사용자의 입력을 받는데 0이하이면 그냥 엔터만 친 것
 			continue;
 		
 		command = strtok(command_line, " ");
 		if (strcmp(command, "add") == 0)
+		{
 			handle_add();
-		/*
+		}
+		else if (strcmp(command, "status") == 0)
+		{
+			status();
+		}
+			/*
 		else if (strcmp(command, "search") == 0)
 			handle_search();
 		else if (strcmp(command, "remove") == 0)
 			handle_remove();
-		else if (strcmp(command, "status") == 0)
-			handle_status();
 		else if (strcmp(command, "play") == 0)
 			handle_play();
 		else if (strcmp(command, "save") == 0)
@@ -64,9 +68,28 @@ void process_command()
 	}
 }
 
+void handle_load()
+{
+	char buffer[BUFFER_LENGTH];
+
+	printf("Data file name ? ");
+	if (read_line(stdin, buffer, BUFFER_LENGTH) <= 0)
+		return;
+	FILE* fp = fopen(buffer, "r");
+	if (fp == NULL)
+	{
+		printf("No such file exists.\n");
+		return;
+	}
+	load(fp);
+	fclose(fp);
+
+}
+
 int main()
 {
 	initialize();
+	handle_load();
 	process_command();
 
 
