@@ -47,7 +47,15 @@ void load(FILE* fp)
 
 Artist* find_artist(char* name)
 {
-	Artist* p = artist_directory[(unsigned char)name[0]];			//first artist with initial name[0]. unsigned char에 대한 설명이 있긴 한데...
+	Artist* p = artist_directory[(unsigned char)name[0]];			//first artist with initial name[0].
+	/*
+	name[0]가 가질 수 있는 값은 00000000~11111111
+	이 값을 배열 index로 쓰면 정수로 인식함.
+	
+	첫 비트가 1인 경우, 그냥 signed int로 변환하면 첫 비트가 부호를 의미하므로 앞의 비트를 다 1로 치환한다.
+	11001111 → 1111111111111111111111111001111
+	그래서 먼저 Unsigned char로 바꿔야 함. 그 다음 int로 변환해야 0~255 값의 정수로 변환됨.
+	*/
 	while (p != NULL && strcmp(p->name, name) < 0)
 		p = p->next;
 
@@ -149,7 +157,7 @@ void status()														//프로그램의 모든 데이터 출력
 	{
 		if (artist_directory[i] != NULL)
 		{
-			Artist* p = artist_directory[i];						//directory[i]가 거느리고 있는 단방향 연결리스트의 head node의 주소(첫번째 노드의 주소)
+			Artist* p = artist_directory[i];						//artist_directory[i]가 거느리고 있는 단방향 연결리스트의 head node의 주소(첫번째 노드의 주소)
 			while (p != NULL)
 			{
 				print_artist(p);
@@ -173,6 +181,34 @@ void print_artist(Artist* p)										//특정 artist의 주소 p 를 받는다
 void print_song(Song* ptr_song)										//Song 인자들 모두 호출
 {
 	printf("   %d : %s, %s\n", ptr_song->index, ptr_song->title, ptr_song->path);
+}
+
+void search_song(char* artist, char* title)
+{
+	Artist* ptr_artist = find_artist(artist);
+	if (ptr_artist == NULL)
+	{
+		printf("No such artist exists.\n");
+		return;
+	}
+	
+	Snode* ptr_snode = ptr_artist->head;
+	while (ptr_snode != NULL && strcmp(ptr_snode->song->title, title) < 0)
+		ptr_snode = ptr_snode;
+	
+	if (ptr_snode != NULL && strcmp(ptr_snode->song->title, title) == 0)
+		print_song(ptr_snode->song);
+	else
+	{
+		printf("No such song exists.\n");
+		return;
+	}
+
+}
+
+void search_song(char* artist)
+{
+
 }
 
 void add_song(char* artist, char* title, char* path)
