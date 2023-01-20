@@ -7,6 +7,8 @@
 
 #define BUFFER_LENGTH 200
 
+void handle_search();
+
 void handle_add()
 {
 	char buffer[BUFFER_LENGTH];											//이름, 제목 등 '입력받을' 공간
@@ -54,9 +56,9 @@ void process_command()
 		{
 			status();
 		}
-			/*
 		else if (strcmp(command, "search") == 0)
 			handle_search();
+			/*
 		else if (strcmp(command, "remove") == 0)
 			handle_remove();
 		else if (strcmp(command, "play") == 0)
@@ -65,6 +67,32 @@ void process_command()
 			handle_save();*/
 		else if (strcmp(command, "exit") == 0)
 			break;
+	}
+}
+
+void handle_search()
+{
+	char name[BUFFER_LENGTH];
+	char title[BUFFER_LENGTH];
+
+	printf("   Artist : ");
+	if (read_line(stdin, name, BUFFER_LENGTH) < 0)
+	{
+		printf("   Artist name required.\n");
+		return;
+	}
+
+	printf("   Title : ");
+	int title_len = read_line(stdin, name, BUFFER_LENGTH);
+	if (title_len <= 0)
+		search_song(name);
+	else
+		search_song(name, title);
+
+	if (read_line(stdin, name, BUFFER_LENGTH) < 0)
+	{
+		printf("   Artist name required.\n");
+		return;
 	}
 }
 
