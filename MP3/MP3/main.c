@@ -8,6 +8,12 @@
 #define BUFFER_LENGTH 200
 
 void handle_search();
+void handle_play();
+void handle_save();
+void process_command();
+void handle_add();
+void handle_load();
+void handle_remove();
 
 void handle_add()
 {
@@ -58,16 +64,44 @@ void process_command()
 		}
 		else if (strcmp(command, "search") == 0)
 			handle_search();
-			/*
-		else if (strcmp(command, "remove") == 0)
-			handle_remove();
 		else if (strcmp(command, "play") == 0)
 			handle_play();
-		else if (strcmp(command, "save") == 0)
-			handle_save();*/
 		else if (strcmp(command, "exit") == 0)
 			break;
+		else if (strcmp(command, "save") == 0)
+		{
+			char* tmp = strtok(NULL, " ");
+			if (strcmp(tmp, "as") != 0)
+				continue;
+			handle_save();
+		}
+		else if (strcmp(command, "remove") == 0)
+			handle_remove();
 	}
+}
+
+void handle_remove()
+{
+	char* id_str = strtok(NULL, " ");
+	int index = atoi(id_str);														//ascii -> int
+	remover(index);
+}
+
+void handle_save()
+{
+	char* file_name = strtok(NULL, " ");
+	FILE* fp = fopen(file_name, "w");
+	save(fp);
+
+	fclose(fp);
+}
+
+void handle_play()
+{
+	char* id_str = strtok(NULL, " ");
+	int index = atoi(id_str);														//ascii -> int
+	play(index);
+
 }
 
 void handle_search()
@@ -85,7 +119,7 @@ void handle_search()
 	printf("   Title : ");
 	int title_len = read_line(stdin, name, BUFFER_LENGTH);
 	if (title_len <= 0)
-		search_song(name);
+		search_song_one(name);
 	else
 		search_song(name, title);
 

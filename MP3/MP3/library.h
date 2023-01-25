@@ -39,6 +39,9 @@ void print_artist(Artist* p);
 void print_song(Song* ptr_song);
 void load(FILE* fp);
 void search_song(char* artist, char* title);
-//void search_song(char* artist);
+void search_song_one(char* artist);
+void play(int index);
+void save(FILE* fp);
+void remover(int index);
 
 #endif
