@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "stackADT.h"
-#define MAX_CAPACITY 100
+#define MAX_LENGTH 100
 
 typedef struct node
 {
@@ -12,8 +12,8 @@ typedef struct node
 Node* top = NULL;
 Stack operand_stack;													//피연산자들을 저장할 스택
 
-static char OPERATORS[] = "+-*/";
-static int PRECEDENCE[] = { 1,1,2,2 };
+static char OPERATORS[] = "+-*/()";
+static int PRECEDENCE[] = { 1, 1, 2, 2, -1, -1 };
 
 Stack operator_stack;
 
@@ -46,7 +46,7 @@ int is_empty()
 }
 int is_full()
 {
-	return top == MAX_CAPACITY - 1;
+	return top == MAX_LENGTH - 1;
 }
 void handle_exception(const char* err_msg)
 {
@@ -82,6 +82,8 @@ char* convert(char* infix)
 	while (!is_empty(operator_stack))
 	{
 		char op = (char)pop(operator_stack);
+		if(op == '(')
+			handle_exception("Unmatched parethesis. line 86\n");
 		sprintf(pos, "%c ", op);
 		pos += 2;
 	}
@@ -91,7 +93,7 @@ char* convert(char* infix)
 
 char* process_op(char op, char* pos)
 {
-	if (is_empty(operator_stack))										//operator_stack이 비어있을 떄
+	if (is_empty(operator_stack) || op == '(')										//operator_stack이 비어있을 떄
 		push(operator_stack, op);
 	else
 	{
@@ -103,12 +105,15 @@ char* process_op(char op, char* pos)
 			while (!is_empty(operator_stack) && precedence(op) <= precedence(top_op))
 			{
 				pop(operator_stack);
+				if (top_op == '(')
+					break;
 				sprintf(pos, "%c ", top_op);
 				pos += 2;
 				if (!is_empty(operator_stack))
 					top_op = (char)peek(operator_stack);
 			}
-			push(operator_stack, op);
+			if(op != ')')
+				push(operator_stack, op);
 		}
 	}
 	return pos;
@@ -182,6 +187,11 @@ int eval_op(char op)
 
 int main(void)
 {
+	char infix[MAX_LENGTH];
+	read_line(stdin, infix, MAX_LENGTH);
 
+	printf(" %s := ", infix);
+	char* postfix = convert(infix);
+	printf("%d\n", eval(postfix));
 
 }

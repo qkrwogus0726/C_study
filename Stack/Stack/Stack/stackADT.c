@@ -80,7 +80,7 @@ Item peek(Stack s)
 	return s->top->data;
 }
 
-void reallocate(Stack s)
+/*void reallocate(Stack s)
 {
 	Item* tmp = (Item*)malloc(2 * s->size * sizeof(Item));
 	if (tmp == NULL)
@@ -90,4 +90,4 @@ void reallocate(Stack s)
 	free(s->contents);
 	s->contents = tmp;
 	s->size *= 2;
-}
+}*/
