@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "stackADT.h"
+#include "pos.h"
+
 
 #define INIT_CAPACITY 100
 
@@ -47,7 +49,7 @@ bool is_empty(Stack s)
 	return s->top == NULL;
 }
 
-void push(Stack s, Item i)
+void push(Stack s, Position pos)
 {
 	struct node* new_node = malloc(sizeof(struct node));
 	if (new_node == NULL)

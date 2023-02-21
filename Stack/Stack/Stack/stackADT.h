@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 typedef int Item;
-typedef struct stack_type* Stack;
+typedef struct stack_type* Stack; //d
 
 Stack create();
 void destroy(Stack s);
