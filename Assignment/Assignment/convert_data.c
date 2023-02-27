@@ -3,34 +3,26 @@
 #include <stdlib.h>
 
 
-long convert_data(unsigned char a[], int start_bit, int len)
+long convert_data(unsigned char a[], int start_bit, int length)
 {
-	long long L = 0;
-	int index_num, remainder;
-	long result = 0;
-	unsigned char* b = malloc(sizeof(unsigned char));
 	long long line = 0;
+	long long shift_num = 0;
+	long result = 0;
+	int last_index, first_index;
 
-	index_num = ((start_bit + (len - 1)) / 8);
-	remainder = start_bit / 8;
+	last_index = ((start_bit + (length - 1)) / 8);
+	first_index = start_bit / 8;
 
-	//① 읽을 비트 가져오기
-	for (int i = index_num; i >= remainder; i--)
-	{ 
+	for (int i = last_index; i >= first_index; i--) { 
 		line = line << 8;
 		line += a[i];
 	}
 
-	//② 읽은 바이트 &연산할 것 만들기
-	for (int i = 0; i < len; i++)
-	{
-		L += pow(2, i);
+	for (int i = 0; i < length; i++) {
+		shift_num += pow(2, i);
 	}
 
-	//③ start bit로 위치 설정
 	line = line >> start_bit % 8;
-	result = line & L;
-
-
+	result = line & shift_num;
 	return result;
 }

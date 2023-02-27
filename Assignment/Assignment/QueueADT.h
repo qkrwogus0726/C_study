@@ -2,21 +2,20 @@
 #define QUEUEADT_H
 #pragma once
 
-typedef struct node Node;
+#define row_num 199
 
+typedef struct node Node;
 
 typedef struct node
 {
 	char* expression;
-
 	char* date;
 	char* time;
-	char* CAN_ID;
-	char* CAN_DATA;
-	char* latitude;		//위도
-	char* longitude;		//경도
-	char* velocity;		//속도
-
+	char* can_id;
+	char* can_data;
+	char* latitude;
+	char* longitude;
+	char* velocity;
 	double* output_data;
 	Node* next;
 }Node;
@@ -28,9 +27,9 @@ typedef struct queue_type
 	int size;
 }Queue;
 
-
+Node* create_node();
 Queue* create_queue();
-void enqueue(Queue* q, double* output_data_, Node* enqueue_node);
+void enqueue(Queue* q, double* enqueue_data, Node* enqueue_node);
 void dequeue(Queue* q, FILE* dequeue_wfile, char* boot_time);
 
 #endif

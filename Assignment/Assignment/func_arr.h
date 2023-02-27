@@ -5,31 +5,42 @@
 
 #include "parser.h"
 
-unsigned char zero(unsigned char CANN[], double output_array[]);
-unsigned char one(unsigned char CANN[], double output_array[]);
-unsigned char two(unsigned char CANN[], double output_array[]);
-unsigned char three(unsigned char CANN[], double output_array[]);
-unsigned char four(unsigned char CANN[], double output_array[]);
-unsigned char five(unsigned char CANN[], double output_array[]);
-unsigned char six(unsigned char CANN[], double output_array[]);
-unsigned char seven(unsigned char CANN[], double output_array[]);
-unsigned char eight(unsigned char CANN[], double output_array[]);
-unsigned char nine(unsigned char CANN[], double output_array[]);
-unsigned char ten(unsigned char CANN[], double output_array[]);
-unsigned char eleven(unsigned char CANN[], double output_array[]);
-unsigned char twelve(unsigned char CANN[], double output_array[]);
-unsigned char thirteen(unsigned char CANN[], double output_array[]);
-unsigned char fourteen(unsigned char CANN[], double output_array[]);
-unsigned char fifteen(unsigned char CANN[], double output_array[]);
-unsigned char sixteen(unsigned char CANN[], double output_array[]);
-unsigned char seventeen(unsigned char CANN[], double output_array[]);
-unsigned char eighteen(unsigned char CANN[], double output_array[]);
-unsigned char nineteen(unsigned char CANN[], double output_array[]);
-unsigned char twenty(unsigned char CANN[], double output_array[]);
-unsigned char twentyone(unsigned char CANN[], double output_array[]);
-unsigned char twentytwo(unsigned char CANN[], double output_array[]);
-unsigned char twentythree(unsigned char CANN[], double output_array[]);
+#define offset_1 50
+#define offset_2 325
+#define offset_3 500
+#define scale_1 0.001
+#define scale_2 0.0015
+#define scale_3 02002
+#define scale_4 0.01
+#define scale_5 0.02
+#define scale_6 0.1
+#define scale_7 0.2
+#define scale_8 0.5
+#define scale_9 2
 
-
+unsigned char vcu_command_1(unsigned char CANN[], double output_array[]);
+unsigned char vcu_command_2(unsigned char CANN[], double output_array[]);
+unsigned char battery(unsigned char CANN[], double output_array[]);
+unsigned char battery_pack_1(unsigned char CANN[], double output_array[]);
+unsigned char battery_pack_2(unsigned char CANN[], double output_array[]);
+unsigned char cell_voltage(unsigned char CANN[], double output_array[]);
+unsigned char cell_temp(unsigned char CANN[], double output_array[]);
+unsigned char bms_limit_1(unsigned char CANN[], double output_array[]);
+unsigned char bms_limit_2(unsigned char CANN[], double output_array[]);
+unsigned char isolation_r(unsigned char CANN[], double output_array[]);
+unsigned char battery_information_1(unsigned char CANN[], double output_array[]);
+unsigned char battery_information_2(unsigned char CANN[], double output_array[]);
+unsigned char battery_information_3(unsigned char CANN[], double output_array[]);
+unsigned char battery_information_4(unsigned char CANN[], double output_array[]);
+unsigned char bcu_dtc(unsigned char CANN[], double output_array[]);
+unsigned char cell_voltage_status(unsigned char CANN[], double output_array[]);
+unsigned char cell_temp_status(unsigned char CANN[], double output_array[]);
+unsigned char heat_plate_temp_status(unsigned char CANN[], double output_array[]);
+unsigned char charging_status(unsigned char CANN[], double output_array[]);
+unsigned char charging_socket_temp(unsigned char CANN[], double output_array[]);
+unsigned char vcutoins_c_1(unsigned char CANN[], double output_array[]);
+unsigned char vcutoins_c_2(unsigned char CANN[], double output_array[]);
+unsigned char vcu_s_1(unsigned char CANN[], double output_array[]);
+unsigned char vcu_f_1(unsigned char CANN[], double output_array[]);
 
 #endif

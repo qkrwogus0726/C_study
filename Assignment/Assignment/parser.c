@@ -1,503 +1,131 @@
 #include "parser.h"
 
-void Parser(Node* data, unsigned char* CAN)
+int find_index(char* id)
 {
-	char temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8, temp9, temp10, temp11, temp12, temp13, temp14, temp15, temp16;
+	char* can_ids[protocol_id_num] = { "18FFA0F3", "18FFB0F3", "18FFA1F3", "18FFA2F3", "18FFA3F3", "18FFA4F3", "18FFA5F3", "18FFA6F3",
+							"18FFA7F3", "18FFA8F3", "18FFA9F3", "18FFAAF3", "18FFACF3", "18FFAFF3", "18FECAF3", "1820F8F4",
+							"1880F8F4", "189FF8F4", "18FFC0F3", "18FEC0F3", "1810A6A0", "1811A6A0", "08F200A0", "041000A0" };
 
+	for (int i = 0; i < protocol_id_num; i++) {
+		if (strcmp(can_ids[i], id) == 0) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+void tokenizer_data(Node* ptr_node)
+{
+	ptr_node->date = _strdup(strtok(ptr_node->expression, " "));
+	ptr_node->time = _strdup(strtok(NULL, " "));
+	ptr_node->latitude = _strdup(strtok(NULL, " "));
+	ptr_node->longitude = _strdup(strtok(NULL, " "));
+	ptr_node->velocity = _strdup(strtok(NULL, " "));
+}
+
+void tokenizer_can(char* tokenize_data, Node* ptr_node)
+{
+	char* tokenized_id, * tokenized_data;
+	tokenized_id = strtok(tokenize_data, "x");
+
+	tokenized_id = strtok(NULL, " ");
+	ptr_node->can_id = _strdup(tokenized_id);
+
+	tokenized_data = strtok(NULL, "\n");
+	ptr_node->can_data = _strdup(tokenized_data);
+}
+
+
+void parser(Node* data, unsigned char* Parsed_data)
+{	
+	
+	char a[16];
 	char* token;
-	token = (char*)malloc(sizeof(char) * MAX);
-	if (token == NULL)
-		return;
+	
+	token = strtok(data->can_data, " ");
 
-
-	token = strtok(data->CAN_DATA, " ");
-
-	if (token[0] >> 6 == 1)
+	for (int i = 0; i < 15; i+=2)
 	{
-		switch (token[0] & 15)
+		if (token[0] >> 6 == 1)
 		{
-		case 1:
-			temp1 = 10;
-			break;
-		case 2:
-			temp1 = 11;
-			break;
-		case 3:
-			temp1 = 12;
-			break;
-		case 4:
-			temp1 = 13;
-			break;
-		case 5:
-			temp1 = 14;
-			break;
-		case 6:
-			temp1 = 15;
-			break;
+			switch (token[0] & 15) {
+			case 1:
+				a[i] = 10;
+				break;
+
+			case 2:
+				a[i] = 11;
+				break;
+
+			case 3:
+				a[i] = 12;
+				break;
+
+			case 4:
+				a[i] = 13;
+				break;
+
+			case 5:
+				a[i] = 14;
+				break;
+
+			case 6:
+				a[i]  = 15;
+				break;
+			}
+		}
+		else {
+			a[i] = token[0] & 15;
+		}
+
+		if (token[1] >> 6 == 1) {
+			switch (token[1] & 15)
+			{
+			case 1:
+				a[i+1] = 10;
+				token = strtok(NULL, " ");
+				break;
+
+			case 2:
+				a[i+1] = 11;
+				token = strtok(NULL, " ");
+				break;
+
+			case 3:
+				a[i+1] = 12;
+				token = strtok(NULL, " ");
+				break;
+
+			case 4:
+				a[i+1] = 13;
+				token = strtok(NULL, " ");
+				break;
+
+			case 5:
+				a[i+1] = 14;
+				token = strtok(NULL, " ");
+				break;
+
+			case 6:
+				a[i+1] = 15;
+				token = strtok(NULL, " ");
+				break;
+			}
+		}
+		else
+		{
+			a[i+1] = token[1] & 15;
+			token = strtok(NULL, " ");
 		}
 	}
-	else
-	{
-		temp1 = token[0] & 15;
-	}
 
-	if (token[1] >> 6 == 1)
-	{
-		switch (token[1] & 15)
-		{
-		case 1:
-			temp2 = 10;
-			break;
-		case 2:
-			temp2 = 11;
-			break;
-		case 3:
-			temp2 = 12;
-			break;
-		case 4:
-			temp2 = 13;
-			break;
-		case 5:
-			temp2 = 14;
-			break;
-		case 6:
-			temp2 = 15;
-			break;
-		}
-	}
-	else
-	{
-		temp2 = token[1] & 15;
-	}
-
-	token = strtok(NULL, " ");
-
-	if (token[0] >> 6 == 1)			//알파벳인 경우
-	{
-		switch (token[0] & 15)
-		{
-		case 1:
-			temp3 = 10;
-			break;
-		case 2:
-			temp3 = 11;
-			break;
-		case 3:
-			temp3 = 12;
-			break;
-		case 4:
-			temp3 = 13;
-			break;
-		case 5:
-			temp3 = 14;
-			break;
-		case 6:
-			temp3 = 15;
-			break;
-		}
-	}
-	else
-	{
-		temp3 = token[0] & 15;
-	}
-
-	if (token[1] >> 6 == 1)
-	{
-		switch (token[1] & 15)
-		{
-		case 1:
-			temp4 = 10;
-			break;
-		case 2:
-			temp4 = 11;
-			break;
-		case 3:
-			temp4 = 12;
-			break;
-		case 4:
-			temp4 = 13;
-			break;
-		case 5:
-			temp4 = 14;
-			break;
-		case 6:
-			temp4 = 15;
-			break;
-		}
-	}
-	else
-	{
-		temp4 = token[1] & 15;
-	}
-
-	token = strtok(NULL, " ");
-
-	if (token[0] >> 6 == 1)
-	{
-		switch (token[0] & 15)
-		{
-		case 1:
-			temp5 = 10;
-			break;
-		case 2:
-			temp5 = 11;
-			break;
-		case 3:
-			temp5 = 12;
-			break;
-		case 4:
-			temp5 = 13;
-			break;
-		case 5:
-			temp5 = 14;
-			break;
-		case 6:
-			temp5 = 15;
-			break;
-		}
-	}
-	else
-	{
-		temp5 = token[0] & 15;
-	}
-
-	if (token[1] >> 6 == 1)
-	{
-		switch (token[1] & 15)
-		{
-		case 1:
-			temp6 = 10;
-			break;
-		case 2:
-			temp6 = 11;
-			break;
-		case 3:
-			temp6 = 12;
-			break;
-		case 4:
-			temp6 = 13;
-			break;
-		case 5:
-			temp6 = 14;
-			break;
-		case 6:
-			temp6 = 15;
-			break;
-		}
-	}
-	else
-	{
-		temp6 = token[1] & 15;
-	}
-
-	token = strtok(NULL, " ");
-
-	if (token[0] >> 6 == 1)
-	{
-		switch (token[0] & 15)
-		{
-		case 1:
-			temp7 = 10;
-			break;
-		case 2:
-			temp7 = 11;
-			break;
-		case 3:
-			temp7 = 12;
-			break;
-		case 4:
-			temp7 = 13;
-			break;
-		case 5:
-			temp7 = 14;
-			break;
-		case 6:
-			temp7 = 15;
-			break;
-		}
-	}
-	else
-	{
-		temp7 = token[0] & 15;
-	}
-
-	if (token[1] >> 6 == 1)
-	{
-		switch (token[1] & 15)
-		{
-		case 1:
-			temp8 = 10;
-			break;
-		case 2:
-			temp8 = 11;
-			break;
-		case 3:
-			temp8 = 12;
-			break;
-		case 4:
-			temp8 = 13;
-			break;
-		case 5:
-			temp8 = 14;
-			break;
-		case 6:
-			temp8 = 15;
-			break;
-		}
-	}
-	else
-	{
-		temp8 = token[1] & 15;
-	}
-
-	token = strtok(NULL, " ");
-
-	if (token[0] >> 6 == 1)
-	{
-		switch (token[0] & 15)
-		{
-		case 1:
-			temp9 = 10;
-			break;
-		case 2:
-			temp9 = 11;
-			break;
-		case 3:
-			temp9 = 12;
-			break;
-		case 4:
-			temp9 = 13;
-			break;
-		case 5:
-			temp9 = 14;
-			break;
-		case 6:
-			temp9 = 15;
-			break;
-		}
-	}
-	else
-	{
-		temp9 = token[0] & 15;
-	}
-
-	if (token[1] >> 6 == 1)
-	{
-		switch (token[1] & 15)
-		{
-		case 1:
-			temp10 = 10;
-			break;
-		case 2:
-			temp10 = 11;
-			break;
-		case 3:
-			temp10 = 12;
-			break;
-		case 4:
-			temp10 = 13;
-			break;
-		case 5:
-			temp10 = 14;
-			break;
-		case 6:
-			temp10 = 15;
-			break;
-		}
-	}
-	else
-	{
-		temp10 = token[1] & 15;
-	}
-
-	token = strtok(NULL, " ");
-
-	if (token[0] >> 6 == 1)
-	{
-		switch (token[0] & 15)
-		{
-		case 1:
-			temp11 = 10;
-			break;
-		case 2:
-			temp11 = 11;
-			break;
-		case 3:
-			temp11 = 12;
-			break;
-		case 4:
-			temp11 = 13;
-			break;
-		case 5:
-			temp11 = 14;
-			break;
-		case 6:
-			temp11 = 15;
-			break;
-		}
-	}
-	else
-	{
-		temp11 = token[0] & 15;
-	}
-
-	if (token[1] >> 6 == 1)
-	{
-		switch (token[1] & 15)
-		{
-		case 1:
-			temp12 = 10;
-			break;
-		case 2:
-			temp12 = 11;
-			break;
-		case 3:
-			temp12 = 12;
-			break;
-		case 4:
-			temp12 = 13;
-			break;
-		case 5:
-			temp12 = 14;
-			break;
-		case 6:
-			temp12 = 15;
-			break;
-		}
-	}
-	else
-	{
-		temp12 = token[1] & 15;
-	}
-
-	token = strtok(NULL, " ");
-
-	if (token[0] >> 6 == 1)
-	{
-		switch (token[0] & 15)
-		{
-		case 1:
-			temp13 = 10;
-			break;
-		case 2:
-			temp13 = 11;
-			break;
-		case 3:
-			temp13 = 12;
-			break;
-		case 4:
-			temp13 = 13;
-			break;
-		case 5:
-			temp13 = 14;
-			break;
-		case 6:
-			temp13 = 15;
-			break;
-		}
-	}
-	else
-	{
-		temp13 = token[0] & 15;
-	}
-
-	if (token[1] >> 6 == 1)
-	{
-		switch (token[1] & 15)
-		{
-		case 1:
-			temp14 = 10;
-			break;
-		case 2:
-			temp14 = 11;
-			break;
-		case 3:
-			temp14 = 12;
-			break;
-		case 4:
-			temp14 = 13;
-			break;
-		case 5:
-			temp14 = 14;
-			break;
-		case 6:
-			temp14 = 15;
-			break;
-		}
-	}
-	else
-	{
-		temp14 = token[1] & 15;
-	}
-
-	token = strtok(NULL, " ");
-
-	if (token[0] >> 6 == 1)
-	{
-		switch (token[0] & 15)
-		{
-		case 1:
-			temp15 = 10;
-			break;
-		case 2:
-			temp15 = 11;
-			break;
-		case 3:
-			temp15 = 12;
-			break;
-		case 4:
-			temp15 = 13;
-			break;
-		case 5:
-			temp15 = 14;
-			break;
-		case 6:
-			temp15 = 15;
-			break;
-		}
-	}
-	else
-	{
-		temp15 = token[0] & 15;
-	}
-
-	if (token[1] >> 6 == 1)
-	{
-		switch (token[1] & 15)
-		{
-		case 1:
-			temp16 = 10;
-			break;
-		case 2:
-			temp16 = 11;
-			break;
-		case 3:
-			temp16 = 12;
-			break;
-		case 4:
-			temp16 = 13;
-			break;
-		case 5:
-			temp16 = 14;
-			break;
-		case 6:
-			temp16 = 15;
-			break;
-		}
-	}
-	else
-	{
-		temp16 = token[1] & 15;
-	}
-
-	CAN[0] = temp1 * 16 + temp2;
-	CAN[1] = temp3 * 16 + temp4;
-	CAN[2] = temp5 * 16 + temp6;
-	CAN[3] = temp7 * 16 + temp8;
-	CAN[4] = temp9 * 16 + temp10;
-	CAN[5] = temp11 * 16 + temp12;
-	CAN[6] = temp13 * 16 + temp14;
-	CAN[7] = temp15 * 16 + temp16;
-
+	Parsed_data[0] = a[0] * 16 + a[1];
+	Parsed_data[1] = a[2] * 16 + a[3];
+	Parsed_data[2] = a[4] * 16 + a[5];
+	Parsed_data[3] = a[6] * 16 + a[7];
+	Parsed_data[4] = a[8] * 16 + a[9];
+	Parsed_data[5] = a[10] * 16 + a[11];
+	Parsed_data[6] = a[12] * 16 + a[13];
+	Parsed_data[7] = a[14] * 16 + a[15];
 }
 

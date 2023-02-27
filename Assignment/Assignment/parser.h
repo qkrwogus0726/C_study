@@ -8,8 +8,11 @@
 #include "QueueADT.h"
 
 #define MAX 100
+#define protocol_id_num 24
 
-
-void Parser(Node* data, unsigned char* CAN);
+int find_index(char* id);
+void tokenizer_data(Node* ptr_node);
+void tokenizer_can(char* tokenize_data, Node* ptr_node);
+void parser(Node* data, unsigned char* Parsed_data);
 
 #endif
